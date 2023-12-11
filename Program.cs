@@ -72,6 +72,7 @@ class Program
                 {
                     foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                     {
+                        Console.WriteLine($"Extracting {entry.Key}...");
                         entry.WriteToDirectory(directory, new ExtractionOptions()
                         {
                             ExtractFullPath = true,
@@ -83,7 +84,7 @@ class Program
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while extracting the file {file}: {ex.Message}");
-                return;
+                continue;
             }
         }
 
@@ -104,13 +105,13 @@ class Program
             {
                 switch (section)
                 {
-                    case "[files]":
+                    case "[file_names]":
                         fileNames.Add(line);
                         break;
-                    case "[paths]":
+                    case "[file_paths]":
                         filePaths.Add(line);
                         break;
-                    case "[dirs]":
+                    case "[files_under_directories]":
                         dirPaths.Add(line);
                         break;
                 }
@@ -150,6 +151,7 @@ class Program
             {
                 foreach (var file in foundFiles)
                 {
+                    Console.WriteLine($"Adding {file} to archive...");
                     archive.CreateEntryFromFile(file, Path.GetFileName(file));
                 }
             }
