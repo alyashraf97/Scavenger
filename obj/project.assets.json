@@ -1,0 +1,131 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "SharpCompress/0.34.2": {
+        "type": "package",
+        "dependencies": {
+          "ZstdSharp.Port": "0.7.2"
+        },
+        "compile": {
+          "lib/net7.0/SharpCompress.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/SharpCompress.dll": {}
+        }
+      },
+      "ZstdSharp.Port/0.7.2": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/ZstdSharp.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/ZstdSharp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SharpCompress/0.34.2": {
+      "sha512": "x+L5dw5D44EtN1m+0kkTHPi0v+u7S3iyj6nMcfns1y3uKQVb/nflmlroPWIILcxUnbTV2xRqwU335sMkRhDM7A==",
+      "type": "package",
+      "path": "sharpcompress/0.34.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/SharpCompress.dll",
+        "lib/net6.0/SharpCompress.dll",
+        "lib/net7.0/SharpCompress.dll",
+        "lib/netstandard2.0/SharpCompress.dll",
+        "lib/netstandard2.1/SharpCompress.dll",
+        "sharpcompress.0.34.2.nupkg.sha512",
+        "sharpcompress.nuspec"
+      ]
+    },
+    "ZstdSharp.Port/0.7.2": {
+      "sha512": "mT6Pb7qzDGapJ2ic4dAFqbzHpM+qgnasQIGR/Sofrk0fmKTQSTljG55OFXHbDJczLZWnUAFsg4bKR81uHiKzPg==",
+      "type": "package",
+      "path": "zstdsharp.port/0.7.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/ZstdSharp.dll",
+        "lib/net5.0/ZstdSharp.dll",
+        "lib/net6.0/ZstdSharp.dll",
+        "lib/net7.0/ZstdSharp.dll",
+        "lib/netcoreapp3.1/ZstdSharp.dll",
+        "lib/netstandard2.0/ZstdSharp.dll",
+        "lib/netstandard2.1/ZstdSharp.dll",
+        "zstdsharp.port.0.7.2.nupkg.sha512",
+        "zstdsharp.port.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "SharpCompress >= 0.34.2"
+    ]
+  },
+  "packageFolders": {
+    "/home/gebz/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/media/gebz/Development/C#/Projects/Scavenger/scavenger/Scavenger/Scavenger.csproj",
+      "projectName": "Scavenger",
+      "projectPath": "/media/gebz/Development/C#/Projects/Scavenger/scavenger/Scavenger/Scavenger.csproj",
+      "packagesPath": "/home/gebz/.nuget/packages/",
+      "outputPath": "/media/gebz/Development/C#/Projects/Scavenger/scavenger/Scavenger/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/gebz/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "SharpCompress": {
+            "target": "Package",
+            "version": "[0.34.2, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
