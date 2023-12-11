@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -41,6 +41,18 @@ class Program
             return;
         }
 
+        if (!Directory.Exists(directory))
+        {
+            Console.WriteLine($"The directory {directory} does not exist.");
+            return;
+        }
+
+        if (!File.Exists(listFile))
+        {
+            Console.WriteLine($"The list file {listFile} does not exist.");
+            return;
+        }
+
         if (outputPath == null)
         {
             outputPath = Directory.GetCurrentDirectory();
@@ -54,16 +66,24 @@ class Program
         // Extract all compressed files in the directory
         foreach (var file in Directory.EnumerateFiles(directory))
         {
-            using (var archive = ArchiveFactory.Open(file))
+            try
             {
-                foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
+                using (var archive = ArchiveFactory.Open(file))
                 {
-                    entry.WriteToDirectory(directory, new ExtractionOptions()
+                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                     {
-                        ExtractFullPath = true,
-                        Overwrite = true
-                    });
+                        entry.WriteToDirectory(directory, new ExtractionOptions()
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true
+                        });
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while extracting the file {file}: {ex.Message}");
+                return;
             }
         }
 
@@ -84,13 +104,13 @@ class Program
             {
                 switch (section)
                 {
-                    case "[file_names]":
+                    case "[files]":
                         fileNames.Add(line);
                         break;
-                    case "[file_paths]":
+                    case "[paths]":
                         filePaths.Add(line);
                         break;
-                    case "[files_under_directories]":
+                    case "[dirs]":
                         dirPaths.Add(line);
                         break;
                 }
@@ -124,12 +144,20 @@ class Program
         }
 
         // Add the found files to a new compressed archive
-        using (var archive = new ZipArchive(File.Open(outputArchiveName, FileMode.Create), ZipArchiveMode.Create))
+        try
         {
-            foreach (var file in foundFiles)
+            using (var archive = new ZipArchive(File.Open(outputArchiveName, FileMode.Create), ZipArchiveMode.Create))
             {
-                archive.CreateEntryFromFile(file, Path.GetFileName(file));
+                foreach (var file in foundFiles)
+                {
+                    archive.CreateEntryFromFile(file, Path.GetFileName(file));
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while creating the archive {outputArchiveName}: {ex.Message}");
+            return;
         }
     }
 }
