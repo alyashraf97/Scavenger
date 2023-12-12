@@ -11,8 +11,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        string? directory = null;
-        string? listFile = null;
+        string directory = "Scavenger";
+        string listFile = "scavenger.txt";
         string? outputPath = null;
         string? outputArchiveName = null;
 
@@ -33,12 +33,6 @@ class Program
                     outputArchiveName = args[++i];
                     break;
             }
-        }
-
-        if (directory == null || listFile == null)
-        {
-            Console.WriteLine("Missing required arguments.");
-            return;
         }
 
         if (!Directory.Exists(directory))
