@@ -1,147 +1,78 @@
-using System;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 
+
+
 class Program
 {
-    static void Main(string[] args)
-    {
-        string directory = "Scavenger";
-        string listFile = "scavenger.txt";
-        string? outputPath = null;
-        string? outputArchiveName = null;
+    static void Main(string[] pargs)
+    {        
+        Args? args = Args.HandleArgs(pargs);
 
-        for (int i = 0; i < args.Length; i++)
+        if (args == null)
         {
-            switch (args[i])
-            {
-                case "-d":
-                    directory = args[++i];
-                    break;
-                case "-l":
-                    listFile = args[++i];
-                    break;
-                case "-p":
-                    outputPath = args[++i];
-                    break;
-                case "-n":
-                    outputArchiveName = args[++i];
-                    break;
-            }
-        }
-
-        if (!Directory.Exists(directory))
-        {
-            Console.WriteLine($"The directory {directory} does not exist.");
+            Console.WriteLine("Must supply valid arguments (-d <target_dir> and -l <list_file> or have a dir named" +
+                             " Scavenger and a list file called scavenger.txt).");
             return;
         }
 
-        if (!File.Exists(listFile))
-        {
-            Console.WriteLine($"The list file {listFile} does not exist.");
-            return;
-        }
-
-        if (outputPath == null)
-        {
-            outputPath = Directory.GetCurrentDirectory();
-        }
-
-        if (outputArchiveName == null)
-        {
-            outputArchiveName = $"request-{DateTime.Now:yyyy-MMM-dd-HH-mm}.zip";
-        }
-
+        ListFile targets = ListFile.ParseListFile(args.ListFile);
+        
         // Extract all compressed files in the directory
-        foreach (var file in Directory.EnumerateFiles(directory))
+        try
         {
-            try
-            {
-                using (var archive = ArchiveFactory.Open(file))
-                {
-                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
-                    {
-                        Console.WriteLine($"Extracting {entry.Key}...");
-                        entry.WriteToDirectory(directory, new ExtractionOptions()
-                        {
-                            ExtractFullPath = true,
-                            Overwrite = true
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while extracting the file {file}: {ex.Message}");
-                continue;
-            }
+            TargetDirectory.ExtractCompressedFiles(args.TargetDirectory);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
 
         // Read the list file and find all files according to the sections
-        var fileNames = new List<string>();
-        var filePaths = new List<string>();
-        var dirPaths = new List<string>();
-
-        var section = "";
-
-        foreach (var line in File.ReadLines(listFile))
-        {
-            if (Regex.IsMatch(line, @"^\[.*\]$"))
-            {
-                section = line;
-            }
-            else
-            {
-                switch (section)
-                {
-                    case "[file_names]":
-                        fileNames.Add(line);
-                        break;
-                    case "[file_paths]":
-                        filePaths.Add(line);
-                        break;
-                    case "[files_under_directories]":
-                        dirPaths.Add(line);
-                        break;
-                }
-            }
-        }
+        
 
         var foundFiles = new List<string>();
 
         // Find files by name
-        foreach (var fileName in fileNames)
-        {
-            foundFiles.AddRange(Directory.GetFiles(directory, fileName, SearchOption.AllDirectories));
+        if (targets.Files != null)
+        {            
+            foreach (var fileName in targets.Files)
+            {
+                foundFiles.AddRange(Directory.GetFiles(args.TargetDirectory, fileName, SearchOption.AllDirectories));
+            }
         }
 
         // Find files by path
-        foreach (var filePath in filePaths)
+        if (targets.Paths != null)
         {
-            if (File.Exists(filePath))
+            foreach (var filePath in targets.Paths)
             {
-                foundFiles.Add(filePath);
+                if (File.Exists(filePath))
+                {
+                    foundFiles.Add(filePath);
+                }
             }
         }
 
         // Find files under directories
-        foreach (var dirPath in dirPaths)
+        if (targets.Dirs != null)
         {
-            if (Directory.Exists(dirPath))
+            foreach (var dirPath in targets.Dirs)
             {
-                foundFiles.AddRange(Directory.GetFiles(dirPath, "*.*", SearchOption.AllDirectories));
+                if (Directory.Exists(dirPath))
+                {
+                    foundFiles.AddRange(Directory.GetFiles(dirPath, "*.*", SearchOption.AllDirectories));
+                }
             }
         }
 
         // Add the found files to a new compressed archive
         try
         {
-            using (var archive = new ZipArchive(File.Open(outputArchiveName, FileMode.Create), ZipArchiveMode.Create))
+            using (var archive = new ZipArchive(File.Open(args.OutputArchiveName, FileMode.Create), ZipArchiveMode.Create))
             {
                 foreach (var file in foundFiles)
                 {
@@ -152,8 +83,11 @@ class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An error occurred while creating the archive {outputArchiveName}: {ex.Message}");
+            Console.WriteLine($"An error occurred while creating the archive {args.OutputArchiveName}: {ex.Message}");
             return;
         }
     }
+
 }
+
+
